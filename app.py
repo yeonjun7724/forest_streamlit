@@ -3,7 +3,6 @@ import time
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import streamlit.components.v1 as components
 
 # 페이지 설정
 st.set_page_config(
@@ -33,7 +32,7 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg, var(--bg-lig
 .premium-header { background: var(--gradient-1); padding: 3rem 2rem; border-radius: var(--border-radius); text-align: center; margin-bottom: 2rem; box-shadow: var(--shadow); }
 .premium-header h1 { margin: 0; color: #fff; font-size: 3rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
 .premium-header p { margin: 1rem 0 0; color: rgba(255,255,255,0.9); font-size: 1.2rem; }
-.premium-card { background: var(--card-bg, var(--card-light)); border-radius: var(--border-radius); padding: 2rem; box-shadow: var(--shadow); transition: .3s; position: relative; overflow: hidden; min-height: 350px; }
+.premium-card { background: var(--card-bg, var(--card-light)); border-radius: var(--border-radius); padding: 2rem; box-shadow: var(--shadow); transition: .3s; position: relative; overflow: hidden; min-height: 300px; }
 .premium-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); }
 .card-title { font-size: 1.4rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: .5rem; }
 .stat-card { background: var(--gradient-2); color: #fff; padding: 1.5rem; border-radius: 12px; text-align: center; margin: 1rem 0; box-shadow: var(--shadow); transition: .3s; }
@@ -108,43 +107,35 @@ with c1:
     st.markdown(html, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 연도별 추이 (카드 내부에 HTML 임베드)
 with c2:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">📈 연도별 언급량 추이</div>', unsafe_allow_html=True)
     fig = px.bar(data['yearly'], x='연도', y='언급량', text='언급량', color='연도', color_discrete_sequence=SHIITAKE_COLORS)
     fig.update_traces(texttemplate='%{text:,}', textposition='outside')
     fig.update_layout(height=320, margin=dict(t=20,b=20,l=20,r=20), plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-    html = fig.to_html(full_html=False, include_plotlyjs='cdn')
-    components.html(html, height=360, scrolling=False)
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 계절별 분포
 with c3:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">🗓️ 계절별 언급 분포</div>', unsafe_allow_html=True)
     fig = px.pie(data['seasonal'], names='계절', values='비율', hole=0.4, color_discrete_sequence=SHIITAKE_COLORS[:4])
     fig.update_traces(textinfo='percent+label', textposition='inside')
     fig.update_layout(height=320, margin=dict(t=20,b=20,l=20,r=20))
-    html = fig.to_html(full_html=False, include_plotlyjs=False)
-    components.html(html, height=360, scrolling=False)
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ——— 2행 레이아웃 ——————————————————————————————————————————————————————————————————————————————————————————————
 c4, c5, c6 = st.columns(3, gap="large")
 
-# 감성 분석
 with c4:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">😊 감성 분석</div>', unsafe_allow_html=True)
-    fig = px.bar(
-        data['sentiment'], x='비율', y='감성', orientation='h', text='비율',
-        color='감성', color_discrete_map={'긍정':'#228B22','중립':'#CD853F','부정':'#DC143C'}
-    )
+    fig = px.bar(data['sentiment'], x='비율', y='감성', orientation='h', text='비율',
+                 color='감성', color_discrete_map={'긍정':'#228B22','중립':'#CD853F','부정':'#DC143C'})
     fig.update_traces(texttemplate='%{text}%', textposition='outside')
-    fig.update_layout(height=250, margin=dict(t=20,b=20,l=20,r=20), plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-    html = fig.to_html(full_html=False, include_plotlyjs=False)
-    components.html(html, height=300, scrolling=False)
+    fig.update_layout(height=250, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig, use_container_width=True)
     for _, r in data['sentiment'].iterrows():
         color = '#228B22' if r['감성']=='긍정' else '#FF8C00' if r['감성']=='중립' else '#DC143C'
         st.markdown(f"""
@@ -155,26 +146,22 @@ with c4:
         """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 토픽 모델링
 with c5:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">📊 토픽 모델링</div>', unsafe_allow_html=True)
     fig = px.bar(data['topic'], x='토픽', y='비율', text='비율', color='토픽', color_discrete_sequence=SHIITAKE_COLORS[:4])
     fig.update_traces(texttemplate='%{text}%', textposition='outside')
-    fig.update_layout(height=320, margin=dict(t=20,b=20,l=20,r=20), plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-    html = fig.to_html(full_html=False, include_plotlyjs=False)
-    components.html(html, height=360, scrolling=False)
+    fig.update_layout(height=320, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 연령대별 관심도
 with c6:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">👥 연령대별 관심도</div>', unsafe_allow_html=True)
     fig = px.bar(data['age'], x='연령대', y='비율', text='비율', color='연령대', color_discrete_sequence=SHIITAKE_COLORS[:3])
     fig.update_traces(texttemplate='%{text}%', textposition='outside')
-    fig.update_layout(height=250, margin=dict(t=20,b=20,l=20,r=20), plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-    html = fig.to_html(full_html=False, include_plotlyjs=False)
-    components.html(html, height=300, scrolling=False)
+    fig.update_layout(height=250, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown("""
         <div class="premium-card"><div class="insight-box">
             <h4>📋 연령대별 특징</h4>
@@ -188,21 +175,16 @@ with c6:
 # ——— 3행 레이아웃 ——————————————————————————————————————————————————————————————————————————————————————————————
 c7, c8 = st.columns([1.6, 1], gap="large")
 
-# 용도별 활용 분석
 with c7:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">🍽️ 용도별 활용 분석</div>', unsafe_allow_html=True)
-    fig = px.bar(
-        data['usage'], x='항목', y='비율', text='비율', color='카테고리',
-        color_discrete_map={'요리':SHIITAKE_COLORS[1], '건강':SHIITAKE_COLORS[0]}
-    )
+    fig = px.bar(data['usage'], x='항목', y='비율', text='비율', color='카테고리',
+                 color_discrete_map={'요리':SHIITAKE_COLORS[1], '건강':SHIITAKE_COLORS[0]})
     fig.update_traces(texttemplate='%{text}%', textposition='outside')
-    fig.update_layout(height=380, margin=dict(t=20,b=50,l=20,r=20), xaxis_tickangle=45, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
-    html = fig.to_html(full_html=False, include_plotlyjs=False)
-    components.html(html, height=420, scrolling=False)
+    fig.update_layout(height=380, xaxis_tickangle=45, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# 핵심 인사이트
 with c8:
     st.markdown('<div class="premium-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">💡 핵심 인사이트</div>', unsafe_allow_html=True)
