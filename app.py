@@ -1,20 +1,17 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
+from PIL import Image
 
 st.set_page_config(layout="wide")
 st.title("표고버섯 소셜 빅데이터 분석 (2019-2023)")
 st.subheader("총 언급량: 222,000회 | 67% 증가 추세")
 
 # =========================
-# 1. 주요 키워드 (Word Cloud처럼 표시)
+# 1. 주요 키워드 (워드클라우드)
 # =========================
 st.markdown("### 1. 주요 키워드")
-st.markdown("""
-**표고버섯** **볶음** **면역력**  
-육수 비타민D 채식 콜레스테롤 재배 베타글루칸 표고전  
-원목재배 강칠맛 건표고
-""")
+st.image("wordcloud_output.png", use_column_width=True)
 
 # =========================
 # 2. 연도별 언급량 추이
@@ -43,7 +40,9 @@ st.pyplot(fig)
 # 4. 감성 분석
 # =========================
 st.markdown("### 4. 감성 분석")
-st.markdown("- 긍정 76% (169,100회): \"향이 좋다\", \"건강에 좋은\"\n- 부정 8% (17,800회)\n- 중립 16% (35,600회)")
+st.markdown("- 긍정 76% (169,100회): \"향이 좋다\", \"건강에 좋은\"  
+- 부정 8% (17,800회)  
+- 중립 16% (35,600회)")
 
 # =========================
 # 5. 토픽 모델링
