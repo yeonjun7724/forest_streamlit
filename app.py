@@ -77,12 +77,11 @@ st.markdown("""
 st.markdown('<div class="main-title">표고버섯 소셜 빅데이터 분석 (2019-2023)</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">총 언급량: 222,000회 | 67% 증가 추세</div>', unsafe_allow_html=True)
 
-# 색상 맵
-COLOR_MAP = ['var(--primary-color)', 'var(--secondary-color)', 'var(--accent-color)', '#bd10e0']
+# 색상 맵 (실제 HEX 코드 사용)
+COLOR_MAP = ['#4a90e2', '#50e3c2', '#f5a623', '#bd10e0']
 
 # 1: 키워드 | 연도별 추이 | 계절별 분포
-row1 = st.container()
-with row1:
+with st.container():
     c1, c2, c3 = st.columns(3, gap="large")
     with c1:
         st.markdown('<div class="card"><div class="section-title">주요 키워드</div></div>', unsafe_allow_html=True)
@@ -106,14 +105,15 @@ with row1:
         st.plotly_chart(fig, use_container_width=True)
 
 # 2: 감성 | 토픽 | 연령대
-row2 = st.container()
-with row2:
+with st.container():
     c4, c5, c6 = st.columns(3, gap="large")
     with c4:
         st.markdown('<div class="card"><div class="section-title">감성 분석</div></div>', unsafe_allow_html=True)
-        sentiments = [76,16,8]; labels=['긍정','중립','부정']; colors=['var(--primary-color)','var(--secondary-color)','var(--accent-color)']
+        sentiments = [76,16,8]
+        labels = ['긍정','중립','부정']
+        bar_colors = ['#4a90e2','#50e3c2','#f5a623']
         fig, ax = plt.subplots(figsize=(4,3))
-        ax.barh(labels, sentiments, color=colors)
+        ax.barh(labels, sentiments, color=bar_colors)
         for i, v in enumerate(sentiments): ax.text(v+1, i, f"{v}%", va='center', fontweight='600')
         ax.invert_yaxis(); ax.axis('off')
         st.pyplot(fig)
@@ -137,8 +137,7 @@ with row2:
 </div>''', unsafe_allow_html=True)
 
 # 3: 용도별 | 인사이트
-row3 = st.container()
-with row3:
+with st.container():
     c7, c8 = st.columns([1.5,1], gap="large")
     with c7:
         st.markdown('<div class="card"><div class="section-title">용도별 활용 분석</div></div>', unsafe_allow_html=True)
@@ -147,7 +146,7 @@ with row3:
             '비율':[27,25,18,8,38,22,18,12],
             '카테고리':['요리','요리','요리','요리','건강','건강','건강','건강']
         })
-        fig = px.bar(df_use, x='항목', y='비율', text='비율', color='카테고리', color_discrete_sequence=['var(--secondary-color)','var(--primary-color)'])
+        fig = px.bar(df_use, x='항목', y='비율', text='비율', color='카테고리', color_discrete_sequence=['#50e3c2','#4a90e2'])
         fig.update_traces(textposition='outside')
         fig.update_layout(margin=dict(t=10,b=10,l=10,r=10), height=350)
         st.plotly_chart(fig, use_container_width=True)
