@@ -61,7 +61,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown('<div class="section"><div class="section-title">주요 키워드</div>', unsafe_allow_html=True)
     keywords = "표고버섯 표고버섯 면역력 볶음 육수 비타민D 채식 콜레스테롤 재배 베타글루칸 표고전 원목재배 강칠맛 김표고"
-    wordcloud = WordCloud(font_path='NanumGothic.ttf', width=400, height=300, background_color='white', colormap='Greens').generate(keywords)
+    wordcloud = WordCloud(font_path='NanumGothic-Regular.ttf', width=400, height=300, background_color='white', colormap='Greens').generate(keywords)
     fig, ax = plt.subplots(figsize=(5.5, 3.5))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis('off')
