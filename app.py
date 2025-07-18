@@ -1,7 +1,8 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
-from PIL import Image
+from wordcloud import WordCloud
+import io
 
 st.set_page_config(layout="wide")
 st.title("표고버섯 소셜 빅데이터 분석 (2019-2023)")
@@ -11,7 +12,33 @@ st.subheader("총 언급량: 222,000회 | 67% 증가 추세")
 # 1. 주요 키워드 (워드클라우드)
 # =========================
 st.markdown("### 1. 주요 키워드")
-st.image("wordcloud_output.png", use_column_width=True)
+
+word_freq = {
+    "표고버섯": 100,
+    "볶음": 80,
+    "면역력": 75,
+    "비타민D": 60,
+    "채식": 55,
+    "육수": 50,
+    "콜레스테롤": 45,
+    "재배": 43,
+    "베타글루칸": 42,
+    "표고전": 40,
+    "원목재배": 35,
+    "강칠맛": 30,
+    "건표고": 28
+}
+
+wordcloud = WordCloud(
+    width=800,
+    height=400,
+    background_color='white'
+    # font_path="NanumGothic.ttf"  # 필요 시 한글 폰트 지정
+).generate_from_frequencies(word_freq)
+
+buf = io.BytesIO()
+wordcloud.to_image().save(buf, format='PNG')
+st.image(buf.getvalue(), use_column_width=True)
 
 # =========================
 # 2. 연도별 언급량 추이
@@ -40,9 +67,11 @@ st.pyplot(fig)
 # 4. 감성 분석
 # =========================
 st.markdown("### 4. 감성 분석")
-st.markdown("- 긍정 76% (169,100회): \"향이 좋다\", \"건강에 좋은\"  
+st.markdown("""
+- 긍정 76% (169,100회): "향이 좋다", "건강에 좋은"  
 - 부정 8% (17,800회)  
-- 중립 16% (35,600회)")
+- 중립 16% (35,600회)
+""")
 
 # =========================
 # 5. 토픽 모델링
