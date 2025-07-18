@@ -1,4 +1,4 @@
-import streamlit as st
+Copyimport streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
@@ -122,7 +122,8 @@ body {
     border: 1px solid transparent;
     position: relative;
     overflow: hidden;
-    min-height: 400px;
+    min-height: 450px;
+    margin-bottom: 2rem;
 }
 
 .premium-card::before {
@@ -164,6 +165,11 @@ body {
     height: 2px;
     background: var(--gradient-2);
     border-radius: 1px;
+}
+
+/* Plotly 차트를 카드 안에 포함 */
+.stPlotlyChart {
+    background: transparent !important;
 }
 
 /* 통계 카드 */
@@ -262,7 +268,7 @@ body {
     }
     .premium-card {
         padding: 1.5rem;
-        min-height: 300px;
+        min-height: 350px;
     }
 }
 
@@ -417,293 +423,313 @@ data = load_data()
 col1, col2, col3 = st.columns(3, gap="large")
 
 with col1:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">🔍 주요 키워드</div>', unsafe_allow_html=True)
-    
-    # 인터랙티브 워드클라우드
-    word_html = '<div class="wordcloud-container">'
-    for word, props in data['keywords'].items():
-        word_html += f'<div class="word-item word-{props["size"]}" title="언급도: {props["weight"]}%">{word}</div>'
-    word_html += '</div>'
-    
-    st.markdown(word_html, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🔍 주요 키워드</div>', unsafe_allow_html=True)
+        
+        # 인터랙티브 워드클라우드
+        word_html = '<div class="wordcloud-container">'
+        for word, props in data['keywords'].items():
+            word_html += f'<div class="word-item word-{props["size"]}" title="언급도: {props["weight"]}%">{word}</div>'
+        word_html += '</div>'
+        
+        st.markdown(word_html, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">📈 연도별 언급량 추이</div>', unsafe_allow_html=True)
-    
-    fig_yearly = px.bar(
-        data['yearly_data'], 
-        x='연도', y='언급량',
-        text='언급량',
-        color='연도',
-        color_discrete_sequence=SHIITAKE_COLORS
-    )
-    fig_yearly.update_traces(
-        texttemplate='%{text:,}',
-        textposition='outside',
-        hovertemplate='<b>%{x}</b><br>언급량: %{y:,}회<extra></extra>'
-    )
-    fig_yearly.update_layout(
-        height=320,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_yearly, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">📈 연도별 언급량 추이</div>', unsafe_allow_html=True)
+        
+        fig_yearly = px.bar(
+            data['yearly_data'], 
+            x='연도', y='언급량',
+            text='언급량',
+            color='연도',
+            color_discrete_sequence=SHIITAKE_COLORS
+        )
+        fig_yearly.update_traces(
+            texttemplate='%{text:,}',
+            textposition='outside',
+            hovertemplate='<b>%{x}</b><br>언급량: %{y:,}회<extra></extra>'
+        )
+        fig_yearly.update_layout(
+            height=320,
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Pretendard", size=12),
+            margin=dict(t=20, b=20, l=20, r=20)
+        )
+        st.plotly_chart(fig_yearly, use_container_width=True, key="yearly_chart")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 with col3:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">🗓️ 계절별 언급 분포</div>', unsafe_allow_html=True)
-    
-    fig_seasonal = px.pie(
-        data['seasonal_data'],
-        names='계절', values='비율',
-        hole=0.4,
-        color_discrete_sequence=SHIITAKE_COLORS[:4]
-    )
-    fig_seasonal.update_traces(
-        textposition='inside',
-        textinfo='percent+label',
-        hovertemplate='<b>%{label}</b><br>비율: %{percent}<br>언급량: %{value}%<extra></extra>'
-    )
-    fig_seasonal.update_layout(
-        height=320,
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_seasonal, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🗓️ 계절별 언급 분포</div>', unsafe_allow_html=True)
+        
+        fig_seasonal = px.pie(
+            data['seasonal_data'],
+            names='계절', values='비율',
+            hole=0.4,
+            color_discrete_sequence=SHIITAKE_COLORS[:4]
+        )
+        fig_seasonal.update_traces(
+            textposition='inside',
+            textinfo='percent+label',
+            hovertemplate='<b>%{label}</b><br>비율: %{percent}<br>언급량: %{value}%<extra></extra>'
+        )
+        fig_seasonal.update_layout(
+            height=320,
+            font=dict(family="Pretendard", size=12),
+            margin=dict(t=20, b=20, l=20, r=20)
+        )
+        st.plotly_chart(fig_seasonal, use_container_width=True, key="seasonal_chart")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # 2행: 감성 분석, 토픽 모델링, 연령대별 관심도
 col4, col5, col6 = st.columns(3, gap="large")
 
 with col4:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">😊 감성 분석</div>', unsafe_allow_html=True)
-    
-    fig_sentiment = px.bar(
-        data['sentiment_data'],
-        x='비율', y='감성',
-        orientation='h',
-        text='비율',
-        color='감성',
-        color_discrete_map={
-            '긍정': '#228B22',
-            '중립': '#CD853F', 
-            '부정': '#DC143C'
-        }
-    )
-    fig_sentiment.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{y}</b><br>비율: %{x}%<br>언급수: %{customdata:,}회<extra></extra>',
-        customdata=data['sentiment_data']['언급수']
-    )
-    fig_sentiment.update_layout(
-        height=250,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_sentiment, use_container_width=True)
-    
-    # 통계 요약
-    for idx, row in data['sentiment_data'].iterrows():
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">😊 감성 분석</div>', unsafe_allow_html=True)
+        
+        fig_sentiment = px.bar(
+            data['sentiment_data'],
+            x='비율', y='감성',
+            orientation='h',
+            text='비율',
+            color='감성',
+            color_discrete_map={
+                '긍정': '#228B22',
+                '중립': '#CD853F', 
+                '부정': '#DC143C'
+            }
+        )
+        fig_sentiment.update_traces(
+            texttemplate='%{text}%',
+            textposition='outside',
+            hovertemplate='<b>%{y}</b><br>비율: %{x}%<br>언급수: %{customdata:,}회<extra></extra>',
+            customdata=data['sentiment_data']['언급수']
+        )
+        fig_sentiment.update_layout(
+            height=200,
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Pretendard", size=12),
+            margin=dict(t=20, b=20, l=20, r=20)
+        )
+        st.plotly_chart(fig_sentiment, use_container_width=True, key="sentiment_chart")
+        
+        # 간단한 통계 요약
         st.markdown(f"""
-        <div class="stat-card" style="background: {'var(--success)' if row['감성']=='긍정' else 'var(--warning)' if row['감성']=='중립' else 'var(--danger)'};">
-            <div class="stat-number">{row['비율']}%</div>
-            <div class="stat-label">{row['감성']} ({row['언급수']:,}회)</div>
+        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+            <div style="text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #228B22;">76%</div>
+                <div style="font-size: 0.9rem; color: #666;">긍정</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #CD853F;">16%</div>
+                <div style="font-size: 0.9rem; color: #666;">중립</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #DC143C;">8%</div>
+                <div style="font-size: 0.9rem; color: #666;">부정</div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 with col5:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">📊 토픽 모델링</div>', unsafe_allow_html=True)
-    
-    fig_topic = px.bar(
-        data['topic_data'],
-        x='토픽', y='비율',
-        text='비율',
-        color='토픽',
-        color_discrete_sequence=SHIITAKE_COLORS[:4]
-    )
-    fig_topic.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{x}</b><br>비율: %{y}%<extra></extra>'
-    )
-    fig_topic.update_layout(
-        height=320,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_topic, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">📊 토픽 모델링</div>', unsafe_allow_html=True)
+        
+        fig_topic = px.bar(
+            data['topic_data'],
+            x='토픽', y='비율',
+            text='비율',
+            color='토픽',
+            color_discrete_sequence=SHIITAKE_COLORS[:4]
+        )
+        fig_topic.update_traces(
+            texttemplate='%{text}%',
+            textposition='outside',
+            hovertemplate='<b>%{x}</b><br>비율: %{y}%<extra></extra>'
+        )
+        fig_topic.update_layout(
+            height=320,
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Pretendard", size=12),
+            margin=dict(t=20, b=20, l=20, r=20)
+        )
+        st.plotly_chart(fig_topic, use_container_width=True, key="topic_chart")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 with col6:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">👥 연령대별 관심도</div>', unsafe_allow_html=True)
-    
-    fig_age = px.bar(
-        data['age_data'],
-        x='연령대', y='비율',
-        text='비율',
-        color='연령대',
-        color_discrete_sequence=SHIITAKE_COLORS[:3]
-    )
-    fig_age.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>언급수: %{customdata:,}회<extra></extra>',
-        customdata=data['age_data']['언급수']
-    )
-    fig_age.update_layout(
-        height=250,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_age, use_container_width=True)
-    
-    # 연령대별 상세 정보
-    st.markdown("""
-    <div class="insight-box">
-        <h4>📋 연령대별 특징</h4>
-        <p><strong>🔥 20~30대 (69,000회)</strong><br>채식/비건 45%, 다이어트 33%</p>
-        <p><strong>💪 40~50대 (93,450회)</strong><br>면역/건강 48%, 전통요리 32%</p>
-        <p><strong>🌿 60대+ (60,050회)</strong><br>건강식품 52%, 웰빙 38%</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">👥 연령대별 관심도</div>', unsafe_allow_html=True)
+        
+        fig_age = px.bar(
+            data['age_data'],
+            x='연령대', y='비율',
+            text='비율',
+            color='연령대',
+            color_discrete_sequence=SHIITAKE_COLORS[:3]
+        )
+        fig_age.update_traces(
+            texttemplate='%{text}%',
+            textposition='outside',
+            hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>언급수: %{customdata:,}회<extra></extra>',
+            customdata=data['age_data']['언급수']
+        )
+        fig_age.update_layout(
+            height=200,
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Pretendard", size=12),
+            margin=dict(t=20, b=20, l=20, r=20)
+        )
+        st.plotly_chart(fig_age, use_container_width=True, key="age_chart")
+        
+        # 연령대별 상세 정보
+        st.markdown("""
+        <div class="insight-box" style="margin-top: 1rem; padding: 1rem;">
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem;">📋 연령대별 특징</h4>
+            <div style="font-size: 0.85rem; line-height: 1.4;">
+                <p><strong>🔥 20~30대</strong>: 채식/비건 45%</p>
+                <p><strong>💪 40~50대</strong>: 면역/건강 48%</p>
+                <p><strong>🌿 60대+</strong>: 건강식품 52%</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # 3행: 용도별 활용 분석, 핵심 인사이트
 col7, col8 = st.columns([1.6, 1], gap="large")
 
 with col7:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">🍽️ 용도별 활용 분석</div>', unsafe_allow_html=True)
-    
-    fig_usage = px.bar(
-        data['usage_data'],
-        x='항목', y='비율',
-        text='비율',
-        color='카테고리',
-        color_discrete_map={
-            '요리': SHIITAKE_COLORS[1],
-            '건강': SHIITAKE_COLORS[0]
-        }
-    )
-    fig_usage.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>카테고리: %{customdata}<extra></extra>',
-        customdata=data['usage_data']['카테고리']
-    )
-    fig_usage.update_layout(
-        height=380,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=50, l=20, r=20),
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🍽️ 용도별 활용 분석</div>', unsafe_allow_html=True)
+        
+        fig_usage = px.bar(
+            data['usage_data'],
+            x='항목', y='비율',
+            text='비율',
+            color='카테고리',
+            color_discrete_map={
+                '요리': SHIITAKE_COLORS[1],
+                '건강': SHIITAKE_COLORS[0]
+            }
         )
-    )
-    fig_usage.update_xaxes(tickangle=45)
-    st.plotly_chart(fig_usage, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        fig_usage.update_traces(
+            texttemplate='%{text}%',
+            textposition='outside',
+            hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>카테고리: %{customdata}<extra></extra>',
+            customdata=data['usage_data']['카테고리']
+        )
+        fig_usage.update_layout(
+            height=380,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Pretendard", size=12),
+            margin=dict(t=20, b=50, l=20, r=20),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
+        )
+        fig_usage.update_xaxes(tickangle=45)
+        st.plotly_chart(fig_usage, use_container_width=True, key="usage_chart")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 with col8:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">💡 핵심 인사이트</div>', unsafe_allow_html=True)
-    
-    insights = [
-        {"icon": "📈", "title": "성장률", "value": "67%", "desc": "5년간 언급량 증가"},
-        {"icon": "😊", "title": "긍정도", "value": "76%", "desc": "맛과 건강의 이중효과"},
-        {"icon": "🍳", "title": "요리용도", "value": "38%", "desc": "vs 건강효능 32%"},
-        {"icon": "👑", "title": "핵심층", "value": "42%", "desc": "40~50대 관심도 최고"},
-        {"icon": "🌱", "title": "MZ트렌드", "value": "31%", "desc": "비건 트렌드 선도"},
-        {"icon": "🗓️", "title": "사계절", "value": "균등", "desc": "연중 고른 관심"},
-        {"icon": "🚜", "title": "생산연계", "value": "18%", "desc": "스마트팜·귀농 관련"}
-    ]
-    
-    for insight in insights:
-        st.markdown(f"""
-        <div class="stat-card" style="margin: 0.5rem 0; padding: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.5rem;">{insight['icon']}</span>
-                <div>
-                    <div style="font-size: 1.2rem; font-weight: 700;">{insight['title']}: {insight['value']}</div>
-                    <div style="font-size: 0.9rem; opacity: 0.9;">{insight['desc']}</div>
+    with st.container():
+        st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">💡 핵심 인사이트</div>', unsafe_allow_html=True)
+        
+        insights = [
+            {"icon": "📈", "title": "성장률", "value": "67%", "desc": "5년간 언급량 증가"},
+            {"icon": "😊", "title": "긍정도", "value": "76%", "desc": "맛과 건강의 이중효과"},
+            {"icon": "🍳", "title": "요리용도", "value": "38%", "desc": "vs 건강효능 32%"},
+            {"icon": "👑", "title": "핵심층", "value": "42%", "desc": "40~50대 관심도 최고"},
+            {"icon": "🌱", "title": "MZ트렌드", "value": "31%", "desc": "비건 트렌드 선도"},
+            {"icon": "🗓️", "title": "사계절", "value": "균등", "desc": "연중 고른 관심"},
+            {"icon": "🚜", "title": "생산연계", "value": "18%", "desc": "스마트팜·귀농 관련"}
+        ]
+        
+        for insight in insights:
+            st.markdown(f"""
+            <div class="stat-card" style="margin: 0.5rem 0; padding: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">{insight['icon']}</span>
+                    <div>
+                        <div style="font-size: 1.2rem; font-weight: 700;">{insight['title']}: {insight['value']}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">{insight['desc']}</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # 트렌드 전망 & 전략
-st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">🔮 표고버섯 소셜 트렌드 전망 & 마케팅 전략</div>', unsafe_allow_html=True)
+with st.container():
+    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">🔮 표고버섯 소셜 트렌드 전망 & 마케팅 전략</div>', unsafe_allow_html=True)
 
-col_trend1, col_trend2, col_trend3 = st.columns(3)
+    col_trend1, col_trend2, col_trend3 = st.columns(3)
 
-with col_trend1:
-    st.markdown("""
-    <div class="insight-box">
-        <h4>🚀 성장 동력</h4>
-        <ul>
-            <li><strong>건강식품 관심 증가</strong><br>면역력 강화 트렌드</li>
-            <li><strong>채식/비건 확산</strong><br>MZ세대 주도</li>
-            <li><strong>스마트팜 연계</strong><br>생산량 증가</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    with col_trend1:
+        st.markdown("""
+        <div class="insight-box">
+            <h4>🚀 성장 동력</h4>
+            <ul>
+                <li><strong>건강식품 관심 증가</strong><br>면역력 강화 트렌드</li>
+                <li><strong>채식/비건 확산</strong><br>MZ세대 주도</li>
+                <li><strong>스마트팜 연계</strong><br>생산량 증가</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-with col_trend2:
-    st.markdown("""
-    <div class="insight-box">
-        <h4>🎯 타겟별 마케팅</h4>
-        <ul>
-            <li><strong>40~50대</strong><br>면역·콜레스테롤 중심</li>
-            <li><strong>20~30대</strong><br>비건·레시피 콘텐츠</li>
-            <li><strong>60대+</strong><br>전통요리·건강식품</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    with col_trend2:
+        st.markdown("""
+        <div class="insight-box">
+            <h4>🎯 타겟별 마케팅</h4>
+            <ul>
+                <li><strong>40~50대</strong><br>면역·콜레스테롤 중심</li>
+                <li><strong>20~30대</strong><br>비건·레시피 콘텐츠</li>
+                <li><strong>60대+</strong><br>전통요리·건강식품</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-with col_trend3:
-    st.markdown("""
-    <div class="insight-box">
-        <h4>📱 콘텐츠 전략</h4>
-        <ul>
-            <li><strong>균형 배치</strong><br>요리 38% vs 건강 32%</li>
-            <li><strong>계절 맞춤</strong><br>봄=레시피, 겨울=면역</li>
-            <li><strong>긍정 브랜딩</strong><br>76% 긍정 감성 활용</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    with col_trend3:
+        st.markdown("""
+        <div class="insight-box">
+            <h4>📱 콘텐츠 전략</h4>
+            <ul>
+                <li><strong>균형 배치</strong><br>요리 38% vs 건강 32%</li>
+                <li><strong>계절 맞춤</strong><br>봄=레시피, 겨울=면역</li>
+                <li><strong>긍정 브랜딩</strong><br>76% 긍정 감성 활용</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # 푸터
 st.markdown("""
