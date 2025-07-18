@@ -2,7 +2,7 @@ streamlit
 plotly
 pandas
 numpy
-
+distutils
 streamlit
 streamlit-authenticator
 python-dotenv
