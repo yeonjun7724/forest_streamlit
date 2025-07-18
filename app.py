@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS styling
+# Custom CSS styling (with max-height for charts)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
@@ -119,6 +119,8 @@ st.markdown("""
         border-radius: 15px;
         box-shadow: 0 10px 40px rgba(139, 69, 19, 0.15);
         padding: 1rem;
+        max-height: 280px;
+        overflow: hidden;
     }
 
     .section-title {
@@ -208,17 +210,17 @@ with col1:
 
 with col2:
     st.markdown('<div class="section-title">📈 연도별 언급량 추이</div>', unsafe_allow_html=True)
-    fig_yearly = px.bar(yearly_data, x='Year', y='Mentions', 
+    fig_yearly = px.bar(yearly_data, x='Year', y='Mentions',
                        color='Year', color_discrete_sequence=SHIITAKE_COLORS[:5])
     fig_yearly.update_layout(
         showlegend=False,
-        height=280,  # 350 -> 280으로 축소
+        height=220,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
+        font=dict(family="Noto Sans KR", size=11),
         yaxis_title="언급량 (회)",
         xaxis_title="연도",
-        margin=dict(t=20, b=40, l=40, r=20)  # 여백 조정
+        margin=dict(t=20, b=40, l=40, r=20)
     )
     fig_yearly.update_traces(
         hovertemplate='<b>%{x}년</b><br>언급량: %{y:,}회<extra></extra>',
@@ -232,16 +234,16 @@ with col3:
     fig_seasonal = px.pie(seasonal_data, values='Percentage', names='Season',
                          color_discrete_sequence=SHIITAKE_COLORS[:4])
     fig_seasonal.update_layout(
-        height=280,  # 350 -> 280으로 축소
+        height=220,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
-        margin=dict(t=20, b=20, l=20, r=20)  # 여백 조정
+        font=dict(family="Noto Sans KR", size=11),
+        margin=dict(t=20, b=20, l=20, r=20)
     )
     fig_seasonal.update_traces(
         hovertemplate='<b>%{label}</b><br>비율: %{percent}<extra></extra>',
         textinfo='label+percent',
-        textfont_size=11  # 텍스트 크기 축소
+        textfont_size=11
     )
     st.plotly_chart(fig_seasonal, use_container_width=True)
 
@@ -250,18 +252,18 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown('<div class="section-title">😊 감성 분석</div>', unsafe_allow_html=True)
-    fig_sentiment = px.bar(sentiment_data, x='Percentage', y='Sentiment', 
+    fig_sentiment = px.bar(sentiment_data, x='Percentage', y='Sentiment',
                           orientation='h', color='Sentiment',
                           color_discrete_map={'긍정': '#228B22', '중립': '#CD853F', '부정': '#DC143C'})
     fig_sentiment.update_layout(
         showlegend=False,
-        height=240,  # 300 -> 240으로 축소
+        height=180,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
+        font=dict(family="Noto Sans KR", size=11),
         xaxis_title="비율 (%)",
         yaxis_title="",
-        margin=dict(t=20, b=40, l=60, r=20)  # 여백 조정
+        margin=dict(t=20, b=40, l=60, r=20)
     )
     fig_sentiment.update_traces(
         hovertemplate='<b>%{y}</b><br>비율: %{x}%<br>언급량: %{customdata:,}회<extra></extra>',
@@ -284,13 +286,13 @@ with col2:
                       color='Topic', color_discrete_sequence=SHIITAKE_COLORS[:4])
     fig_topic.update_layout(
         showlegend=False,
-        height=280,  # 350 -> 280으로 축소
+        height=220,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
+        font=dict(family="Noto Sans KR", size=11),
         yaxis_title="비율 (%)",
         xaxis_title="토픽",
-        margin=dict(t=20, b=50, l=40, r=20)  # 여백 조정
+        margin=dict(t=20, b=50, l=40, r=20)
     )
     fig_topic.update_traces(
         hovertemplate='<b>%{x}</b><br>비율: %{y}%<extra></extra>',
@@ -306,13 +308,13 @@ with col3:
                     color='Age_Group', color_discrete_sequence=SHIITAKE_COLORS[:3])
     fig_age.update_layout(
         showlegend=False,
-        height=240,  # 300 -> 240으로 축소
+        height=180,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
+        font=dict(family="Noto Sans KR", size=11),
         yaxis_title="비율 (%)",
         xaxis_title="연령대",
-        margin=dict(t=20, b=40, l=40, r=20)  # 여백 조정
+        margin=dict(t=20, b=40, l=40, r=20)
     )
     fig_age.update_traces(
         hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>언급량: %{customdata:,}회<extra></extra>',
@@ -337,9 +339,7 @@ col1, col2 = st.columns([3, 2])
 with col1:
     st.markdown('<div class="section-title">🍳 용도별 활용 분석</div>', unsafe_allow_html=True)
 
-    # Create grouped bar chart
     fig_usage = go.Figure()
-
     cooking_data = usage_data[usage_data['Category'] == '요리']
     health_data = usage_data[usage_data['Category'] == '건강']
 
@@ -350,7 +350,6 @@ with col1:
         marker_color=SHIITAKE_COLORS[1],
         hovertemplate='<b>%{x}</b><br>요리: %{y}%<extra></extra>'
     ))
-
     fig_usage.add_trace(go.Bar(
         name='건강',
         x=health_data['Usage'],
@@ -358,17 +357,16 @@ with col1:
         marker_color=SHIITAKE_COLORS[0],
         hovertemplate='<b>%{x}</b><br>건강: %{y}%<extra></extra>'
     ))
-
     fig_usage.update_layout(
-        height=320,  # 400 -> 320으로 축소
+        height=260,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
+        font=dict(family="Noto Sans KR", size=11),
         yaxis_title="비율 (%)",
         xaxis_title="용도",
         barmode='group',
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        margin=dict(t=40, b=50, l=40, r=20)  # 여백 조정
+        margin=dict(t=40, b=50, l=40, r=20)
     )
     fig_usage.update_xaxes(tickangle=45)
     st.plotly_chart(fig_usage, use_container_width=True)
@@ -449,7 +447,7 @@ with col2:
             <li style="margin-bottom: 1rem;"><strong>40~50대</strong><br><span style="font-size: 0.9rem; opacity: 0.9;">면역·콜레스테롤 중심</span></li>
             <li style="margin-bottom: 1rem;"><strong>20~30대</strong><br><span style="font-size: 0.9rem; opacity: 0.9;">비건·레시피 콘텐츠</span></li>
             <li><strong>60대+</strong><br><span style="font-size: 0.9rem; opacity: 0.9;">전통요리·건강식품</span></li>
-        </ul>
+        </ul>    
     </div>
     """, unsafe_allow_html=True)
 
