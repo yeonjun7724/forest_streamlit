@@ -2,3 +2,13 @@ streamlit
 plotly
 pandas
 numpy
+
+streamlit
+streamlit-authenticator
+python-dotenv
+supabase
+stripe
+matplotlib
+pyarrow
+koreanize_matplotlib
+pydeck
