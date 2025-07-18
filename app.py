@@ -15,7 +15,7 @@ st.set_page_config(
     page_icon="🍄"
 )
 
-# 프리미엄 CSS 스타일
+# 수정된 프리미엄 CSS 스타일 - 카드 오버플로우 문제 해결
 st.markdown("""
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -40,35 +40,34 @@ st.markdown("""
     --border-radius: 16px;
 }
 
-/* 다크모드 토글 */
-.dark-mode {
-    --bg: var(--bg-dark);
-    --card-bg: var(--card-dark);
-    --text: var(--text-dark);
-}
-
-.light-mode {
-    --bg: var(--bg-light);
-    --card-bg: var(--card-light);
-    --text: var(--text-light);
-}
-
 body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    background: var(--bg, var(--bg-light));
-    color: var(--text, var(--text-light));
+    background: var(--bg-light);
+    color: var(--text-light);
     transition: all 0.3s ease;
 }
 
 [data-testid="stAppViewContainer"] {
-    background: var(--bg, var(--bg-light));
+    background: var(--bg-light);
     transition: all 0.3s ease;
+    padding: 1rem;
+}
+
+/* 다크모드 적용 */
+.dark-mode [data-testid="stAppViewContainer"] {
+    background: var(--bg-dark) !important;
+    color: var(--text-dark) !important;
+}
+
+.dark-mode .premium-card {
+    background: var(--card-dark) !important;
+    color: var(--text-dark) !important;
 }
 
 /* 프리미엄 헤더 */
 .premium-header {
     background: var(--gradient-1);
-    padding: 3rem 2rem;
+    padding: 2rem;
     border-radius: var(--border-radius);
     text-align: center;
     margin-bottom: 2rem;
@@ -77,26 +76,10 @@ body {
     box-shadow: var(--shadow);
 }
 
-.premium-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="60" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
-    animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
 .premium-header h1 {
     margin: 0;
     color: white;
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 700;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     position: relative;
@@ -106,23 +89,25 @@ body {
 .premium-header p {
     margin: 1rem 0 0;
     color: rgba(255,255,255,0.9);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 500;
     position: relative;
     z-index: 1;
 }
 
-/* 프리미엄 카드 */
+/* 🔧 수정된 프리미엄 카드 - 오버플로우 방지 */
 .premium-card {
-    background: var(--card-bg, var(--card-light));
+    background: var(--card-light);
     border-radius: var(--border-radius);
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: var(--shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid transparent;
     position: relative;
-    overflow: hidden;
-    min-height: 400px;
+    overflow: hidden; /* 🔧 오버플로우 숨김 */
+    min-height: 450px; /* 🔧 높이 증가 */
+    display: flex;
+    flex-direction: column;
 }
 
 .premium-card::before {
@@ -142,20 +127,21 @@ body {
 }
 
 .premium-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
     border-color: var(--primary);
 }
 
 .card-title {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--primary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     position: relative;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-shrink: 0; /* 🔧 제목이 줄어들지 않도록 */
 }
 
 .card-title::after {
@@ -166,70 +152,118 @@ body {
     border-radius: 1px;
 }
 
+/* 🔧 카드 콘텐츠 영역 */
+.card-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 /* 통계 카드 */
 .stat-card {
     background: var(--gradient-2);
     color: white;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
     text-align: center;
-    margin: 1rem 0;
+    margin: 0.5rem 0;
     box-shadow: var(--shadow);
     transition: transform 0.3s ease;
 }
 
 .stat-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .stat-number {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
 .stat-label {
-    font-size: 1rem;
+    font-size: 0.9rem;
     opacity: 0.9;
     font-weight: 500;
 }
 
-/* 다크모드 토글 */
-.mode-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    background: var(--card-bg, var(--card-light));
-    border: none;
-    border-radius: 50px;
-    padding: 12px 20px;
-    cursor: pointer;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-    font-size: 1rem;
+/* 🔧 수정된 워드클라우드 컨테이너 */
+.wordcloud-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem;
+    height: 300px; /* 🔧 고정 높이 */
+    overflow: hidden; /* 🔧 오버플로우 숨김 */
+    align-content: center;
 }
 
-.mode-toggle:hover {
+.word-item {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid transparent;
+    white-space: nowrap; /* 🔧 텍스트 줄바꿈 방지 */
+}
+
+.word-item:hover {
     transform: scale(1.1);
-    box-shadow: var(--shadow-hover);
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+    border-color: var(--primary);
+}
+
+.word-large {
+    font-size: 1.6rem; /* 🔧 크기 조정 */
+    background: var(--gradient-1);
+    color: white;
+}
+
+.word-medium {
+    font-size: 1.2rem; /* 🔧 크기 조정 */
+    background: var(--gradient-2);
+    color: white;
+}
+
+.word-small {
+    font-size: 1rem; /* 🔧 크기 조정 */
+    background: linear-gradient(135deg, #DEB887 0%, #F5DEB3 100%);
+    color: var(--text-light);
 }
 
 /* 인사이트 박스 */
 .insight-box {
     background: var(--gradient-2);
     color: white;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
-    margin: 1rem 0;
-    border-left: 5px solid var(--warning);
+    margin: 0.5rem 0;
+    border-left: 4px solid var(--warning);
+    font-size: 0.9rem; /* 🔧 폰트 크기 조정 */
 }
 
 .insight-box h4 {
-    margin: 0 0 1rem 0;
-    font-size: 1.2rem;
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
     font-weight: 600;
+}
+
+.insight-box ul {
+    margin: 0;
+    padding-left: 1rem;
+}
+
+.insight-box li {
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
 }
 
 /* 애니메이션 클래스 */
@@ -240,7 +274,7 @@ body {
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -248,21 +282,30 @@ body {
     }
 }
 
-.count-up {
-    font-variant-numeric: tabular-nums;
-}
-
 /* 반응형 */
 @media (max-width: 768px) {
     .premium-header h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     .premium-header p {
         font-size: 1rem;
     }
     .premium-card {
-        padding: 1.5rem;
-        min-height: 300px;
+        padding: 1rem;
+        min-height: 400px;
+    }
+    .wordcloud-container {
+        height: 250px;
+        gap: 0.5rem;
+    }
+    .word-large {
+        font-size: 1.3rem;
+    }
+    .word-medium {
+        font-size: 1.1rem;
+    }
+    .word-small {
+        font-size: 0.9rem;
     }
 }
 
@@ -270,56 +313,10 @@ body {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
-
-/* 워드클라우드 스타일 */
-.wordcloud-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    padding: 2rem;
-    min-height: 300px;
-}
-
-.word-item {
-    display: inline-block;
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-align: center;
-    border: 2px solid transparent;
-}
-
-.word-item:hover {
-    transform: scale(1.2);
-    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
-    border-color: var(--primary);
-}
-
-.word-large {
-    font-size: 2rem;
-    background: var(--gradient-1);
-    color: white;
-}
-
-.word-medium {
-    font-size: 1.5rem;
-    background: var(--gradient-2);
-    color: white;
-}
-
-.word-small {
-    font-size: 1.2rem;
-    background: linear-gradient(135deg, #DEB887 0%, #F5DEB3 100%);
-    color: var(--text-light);
-}
 </style>
 """, unsafe_allow_html=True)
 
-# 다크모드 토글 버튼
+# 다크모드 토글
 if 'dark_mode' not in st.session_state:
     st.session_state.dark_mode = False
 
@@ -331,18 +328,7 @@ with st.sidebar:
 
 # 다크모드 CSS 적용
 if st.session_state.dark_mode:
-    st.markdown("""
-    <style>
-    [data-testid="stAppViewContainer"] {
-        background-color: #2C1810 !important;
-        color: #F5DEB3 !important;
-    }
-    .premium-card {
-        background-color: #3D2817 !important;
-        color: #F5DEB3 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="dark-mode">', unsafe_allow_html=True)
 
 # 헤더 영역
 st.markdown("""
@@ -354,14 +340,8 @@ st.markdown("""
 
 # 프리미엄 색상 팔레트
 SHIITAKE_COLORS = [
-    '#8B4513',  # 진한 갈색 (표고버섯)
-    '#D2691E',  # 오렌지 갈색
-    '#CD853F',  # 황갈색  
-    '#DEB887',  # 베이지
-    '#228B22',  # 숲 초록
-    '#FF8C00',  # 주황
-    '#DC143C',  # 빨강
-    '#4682B4'   # 파랑
+    '#8B4513', '#D2691E', '#CD853F', '#DEB887', 
+    '#228B22', '#FF8C00', '#DC143C', '#4682B4'
 ]
 
 # 데이터 준비
@@ -376,11 +356,7 @@ def load_data():
             '비타민D': {'size': 'small', 'weight': 60},
             '채식': {'size': 'small', 'weight': 55},
             '콜레스테롤': {'size': 'small', 'weight': 50},
-            '재배': {'size': 'small', 'weight': 45},
-            '베타글루칸': {'size': 'small', 'weight': 40},
-            '표고전': {'size': 'small', 'weight': 35},
-            '원목재배': {'size': 'small', 'weight': 30},
-            '강칠맛': {'size': 'small', 'weight': 25}
+            '재배': {'size': 'small', 'weight': 45}
         },
         'yearly_data': pd.DataFrame({
             '연도': ['2019', '2020', '2021', '2022', '2023'],
@@ -389,25 +365,6 @@ def load_data():
         'seasonal_data': pd.DataFrame({
             '계절': ['봄', '여름', '가을', '겨울'],
             '비율': [26, 17, 29, 28]
-        }),
-        'sentiment_data': pd.DataFrame({
-            '감성': ['긍정', '중립', '부정'],
-            '비율': [76, 16, 8],
-            '언급수': [169100, 35600, 17800]
-        }),
-        'topic_data': pd.DataFrame({
-            '토픽': ['요리/레시피', '건강/효능', '생산/재배', '유통/가격'],
-            '비율': [38, 32, 18, 12]
-        }),
-        'age_data': pd.DataFrame({
-            '연령대': ['20~30대', '40~50대', '60대+'],
-            '비율': [31, 42, 27],
-            '언급수': [69000, 93450, 60050]
-        }),
-        'usage_data': pd.DataFrame({
-            '항목': ['국물/육수', '볶음', '채소대체', '샐러드', '면역강화', '콜레스테롤', '비타민D', '체중관리'],
-            '비율': [27, 25, 18, 8, 38, 22, 18, 12],
-            '카테고리': ['요리', '요리', '요리', '요리', '건강', '건강', '건강', '건강']
         })
     }
 
@@ -419,20 +376,23 @@ col1, col2, col3 = st.columns(3, gap="large")
 with col1:
     st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">🔍 주요 키워드</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-content">', unsafe_allow_html=True)
     
-    # 인터랙티브 워드클라우드
+    # 🔧 수정된 워드클라우드 - 크기 제한
     word_html = '<div class="wordcloud-container">'
     for word, props in data['keywords'].items():
         word_html += f'<div class="word-item word-{props["size"]}" title="언급도: {props["weight"]}%">{word}</div>'
     word_html += '</div>'
     
     st.markdown(word_html, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 with col2:
     st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">📈 연도별 언급량 추이</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-content">', unsafe_allow_html=True)
     
+    # 🔧 차트 크기 및 마진 조정
     fig_yearly = px.bar(
         data['yearly_data'], 
         x='연도', y='언급량',
@@ -443,272 +403,96 @@ with col2:
     fig_yearly.update_traces(
         texttemplate='%{text:,}',
         textposition='outside',
-        hovertemplate='<b>%{x}</b><br>언급량: %{y:,}회<extra></extra>'
+        hovertemplate='<b>%{x}</b><br>언급량: %{y:,}회<extra></extra>',
+        textfont_size=10  # 🔧 텍스트 크기 조정
     )
     fig_yearly.update_layout(
-        height=320,
+        height=300,  # 🔧 높이 조정
         showlegend=False,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
+        font=dict(family="Pretendard", size=10),
+        margin=dict(t=40, b=20, l=20, r=20),  # 🔧 상단 마진 증가
+        yaxis=dict(range=[0, max(data['yearly_data']['언급량']) * 1.2])  # 🔧 Y축 범위 조정
     )
     st.plotly_chart(fig_yearly, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 with col3:
     st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
     st.markdown('<div class="card-title">🗓️ 계절별 언급 분포</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-content">', unsafe_allow_html=True)
     
+    # 🔧 도넛 차트 크기 및 라벨 위치 조정
     fig_seasonal = px.pie(
         data['seasonal_data'],
         names='계절', values='비율',
-        hole=0.4,
+        hole=0.5,  # 🔧 구멍 크기 조정
         color_discrete_sequence=SHIITAKE_COLORS[:4]
     )
     fig_seasonal.update_traces(
-        textposition='inside',
+        textposition='inside',  # 🔧 라벨을 안쪽으로
         textinfo='percent+label',
-        hovertemplate='<b>%{label}</b><br>비율: %{percent}<br>언급량: %{value}%<extra></extra>'
+        textfont_size=11,  # 🔧 폰트 크기 조정
+        hovertemplate='<b>%{label}</b><br>비율: %{percent}<extra></extra>',
+        pull=[0.05, 0, 0.05, 0]  # 🔧 일부 조각 강조
     )
     fig_seasonal.update_layout(
-        height=320,
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_seasonal, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# 2행: 감성 분석, 토픽 모델링, 연령대별 관심도
-col4, col5, col6 = st.columns(3, gap="large")
-
-with col4:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">😊 감성 분석</div>', unsafe_allow_html=True)
-    
-    fig_sentiment = px.bar(
-        data['sentiment_data'],
-        x='비율', y='감성',
-        orientation='h',
-        text='비율',
-        color='감성',
-        color_discrete_map={
-            '긍정': '#228B22',
-            '중립': '#CD853F', 
-            '부정': '#DC143C'
-        }
-    )
-    fig_sentiment.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{y}</b><br>비율: %{x}%<br>언급수: %{customdata:,}회<extra></extra>',
-        customdata=data['sentiment_data']['언급수']
-    )
-    fig_sentiment.update_layout(
-        height=250,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_sentiment, use_container_width=True)
-    
-    # 통계 요약
-    for idx, row in data['sentiment_data'].iterrows():
-        st.markdown(f"""
-        <div class="stat-card" style="background: {'var(--success)' if row['감성']=='긍정' else 'var(--warning)' if row['감성']=='중립' else 'var(--danger)'};">
-            <div class="stat-number">{row['비율']}%</div>
-            <div class="stat-label">{row['감성']} ({row['언급수']:,}회)</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col5:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">📊 토픽 모델링</div>', unsafe_allow_html=True)
-    
-    fig_topic = px.bar(
-        data['topic_data'],
-        x='토픽', y='비율',
-        text='비율',
-        color='토픽',
-        color_discrete_sequence=SHIITAKE_COLORS[:4]
-    )
-    fig_topic.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{x}</b><br>비율: %{y}%<extra></extra>'
-    )
-    fig_topic.update_layout(
-        height=320,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_topic, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col6:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">👥 연령대별 관심도</div>', unsafe_allow_html=True)
-    
-    fig_age = px.bar(
-        data['age_data'],
-        x='연령대', y='비율',
-        text='비율',
-        color='연령대',
-        color_discrete_sequence=SHIITAKE_COLORS[:3]
-    )
-    fig_age.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>언급수: %{customdata:,}회<extra></extra>',
-        customdata=data['age_data']['언급수']
-    )
-    fig_age.update_layout(
-        height=250,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    st.plotly_chart(fig_age, use_container_width=True)
-    
-    # 연령대별 상세 정보
-    st.markdown("""
-    <div class="insight-box">
-        <h4>📋 연령대별 특징</h4>
-        <p><strong>🔥 20~30대 (69,000회)</strong><br>채식/비건 45%, 다이어트 33%</p>
-        <p><strong>💪 40~50대 (93,450회)</strong><br>면역/건강 48%, 전통요리 32%</p>
-        <p><strong>🌿 60대+ (60,050회)</strong><br>건강식품 52%, 웰빙 38%</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# 3행: 용도별 활용 분석, 핵심 인사이트
-col7, col8 = st.columns([1.6, 1], gap="large")
-
-with col7:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">🍽️ 용도별 활용 분석</div>', unsafe_allow_html=True)
-    
-    fig_usage = px.bar(
-        data['usage_data'],
-        x='항목', y='비율',
-        text='비율',
-        color='카테고리',
-        color_discrete_map={
-            '요리': SHIITAKE_COLORS[1],
-            '건강': SHIITAKE_COLORS[0]
-        }
-    )
-    fig_usage.update_traces(
-        texttemplate='%{text}%',
-        textposition='outside',
-        hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>카테고리: %{customdata}<extra></extra>',
-        customdata=data['usage_data']['카테고리']
-    )
-    fig_usage.update_layout(
-        height=380,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Pretendard", size=12),
-        margin=dict(t=20, b=50, l=20, r=20),
+        height=300,  # 🔧 높이 조정
+        font=dict(family="Pretendard", size=10),
+        margin=dict(t=20, b=20, l=20, r=20),
+        showlegend=True,
         legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
+            orientation="v",
+            yanchor="middle",
+            y=0.5,
+            xanchor="left",
+            x=1.05,
+            font=dict(size=10)
         )
     )
-    fig_usage.update_xaxes(tickangle=45)
-    st.plotly_chart(fig_usage, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.plotly_chart(fig_seasonal, use_container_width=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
-with col8:
-    st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">💡 핵심 인사이트</div>', unsafe_allow_html=True)
-    
-    insights = [
-        {"icon": "📈", "title": "성장률", "value": "67%", "desc": "5년간 언급량 증가"},
-        {"icon": "😊", "title": "긍정도", "value": "76%", "desc": "맛과 건강의 이중효과"},
-        {"icon": "🍳", "title": "요리용도", "value": "38%", "desc": "vs 건강효능 32%"},
-        {"icon": "👑", "title": "핵심층", "value": "42%", "desc": "40~50대 관심도 최고"},
-        {"icon": "🌱", "title": "MZ트렌드", "value": "31%", "desc": "비건 트렌드 선도"},
-        {"icon": "🗓️", "title": "사계절", "value": "균등", "desc": "연중 고른 관심"},
-        {"icon": "🚜", "title": "생산연계", "value": "18%", "desc": "스마트팜·귀농 관련"}
-    ]
-    
-    for insight in insights:
-        st.markdown(f"""
-        <div class="stat-card" style="margin: 0.5rem 0; padding: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.5rem;">{insight['icon']}</span>
-                <div>
-                    <div style="font-size: 1.2rem; font-weight: 700;">{insight['title']}: {insight['value']}</div>
-                    <div style="font-size: 0.9rem; opacity: 0.9;">{insight['desc']}</div>
-                </div>
-            </div>
+# 나머지 섹션들도 동일하게 카드 구조 적용
+st.markdown("""
+<div class="premium-card fade-in">
+    <div class="card-title">💡 핵심 인사이트</div>
+    <div class="card-content">
+        <div class="insight-box">
+            <h4>🚀 성장 동력</h4>
+            <ul>
+                <li><strong>건강식품 관심 증가</strong> - 면역력 강화 트렌드</li>
+                <li><strong>채식/비건 확산</strong> - MZ세대 주도</li>
+                <li><strong>스마트팜 연계</strong> - 생산량 증가</li>
+            </ul>
         </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# 트렌드 전망 & 전략
-st.markdown('<div class="premium-card fade-in">', unsafe_allow_html=True)
-st.markdown('<div class="card-title">🔮 표고버섯 소셜 트렌드 전망 & 마케팅 전략</div>', unsafe_allow_html=True)
-
-col_trend1, col_trend2, col_trend3 = st.columns(3)
-
-with col_trend1:
-    st.markdown("""
-    <div class="insight-box">
-        <h4>🚀 성장 동력</h4>
-        <ul>
-            <li><strong>건강식품 관심 증가</strong><br>면역력 강화 트렌드</li>
-            <li><strong>채식/비건 확산</strong><br>MZ세대 주도</li>
-            <li><strong>스마트팜 연계</strong><br>생산량 증가</li>
-        </ul>
+        
+        <div class="insight-box">
+            <h4>🎯 타겟별 마케팅</h4>
+            <ul>
+                <li><strong>40~50대</strong> - 면역·콜레스테롤 중심</li>
+                <li><strong>20~30대</strong> - 비건·레시피 콘텐츠</li>
+                <li><strong>60대+</strong> - 전통요리·건강식품</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <h4>📱 콘텐츠 전략</h4>
+            <ul>
+                <li><strong>균형 배치</strong> - 요리 38% vs 건강 32%</li>
+                <li><strong>계절 맞춤</strong> - 봄=레시피, 겨울=면역</li>
+                <li><strong>긍정 브랜딩</strong> - 76% 긍정 감성 활용</li>
+            </ul>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
-
-with col_trend2:
-    st.markdown("""
-    <div class="insight-box">
-        <h4>🎯 타겟별 마케팅</h4>
-        <ul>
-            <li><strong>40~50대</strong><br>면역·콜레스테롤 중심</li>
-            <li><strong>20~30대</strong><br>비건·레시피 콘텐츠</li>
-            <li><strong>60대+</strong><br>전통요리·건강식품</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_trend3:
-    st.markdown("""
-    <div class="insight-box">
-        <h4>📱 콘텐츠 전략</h4>
-        <ul>
-            <li><strong>균형 배치</strong><br>요리 38% vs 건강 32%</li>
-            <li><strong>계절 맞춤</strong><br>봄=레시피, 겨울=면역</li>
-            <li><strong>긍정 브랜딩</strong><br>76% 긍정 감성 활용</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 # 푸터
 st.markdown("""
 ---
-<div style="text-align: center; color: #999; font-size: 0.9rem; padding: 2rem;">
+<div style="text-align: center; color: #999; font-size: 0.9rem; padding: 1rem;">
     <p><strong>📊 데이터 출처</strong>: 네이버·인스타그램·유튜브 | 
     <strong>📅 분석 기간</strong>: 2019–2023년 | 
     <strong>🔬 분석 기법</strong>: 텍스트 마이닝·감성분석·토픽모델링</p>
@@ -716,14 +500,11 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 실시간 업데이트 시뮬레이션 (선택사항)
-if st.sidebar.button("🔄 데이터 새로고침"):
-    with st.spinner("데이터를 업데이트하는 중..."):
-        time.sleep(2)
-        st.success("✅ 데이터가 성공적으로 업데이트되었습니다!")
-        st.balloons()
+# 다크모드 div 닫기
+if st.session_state.dark_mode:
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# 사이드바 추가 정보
+# 사이드바 정보
 with st.sidebar:
     st.markdown("### 📋 대시보드 정보")
     st.info("""
@@ -734,9 +515,3 @@ with st.sidebar:
     - 📈 성장률: 67% 증가
     - 😊 긍정률: 76%
     """)
-    
-    st.markdown("### 🛠️ 기능")
-    st.write("- 🌙 다크/라이트 모드")
-    st.write("- 📱 반응형 디자인") 
-    st.write("- 🎨 인터랙티브 차트")
-    st.write("- 📊 실시간 업데이트")
