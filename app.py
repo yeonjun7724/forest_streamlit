@@ -212,12 +212,13 @@ with col2:
                        color='Year', color_discrete_sequence=SHIITAKE_COLORS[:5])
     fig_yearly.update_layout(
         showlegend=False,
-        height=350,
+        height=280,  # 350 -> 280으로 축소
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=12),
+        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
         yaxis_title="언급량 (회)",
-        xaxis_title="연도"
+        xaxis_title="연도",
+        margin=dict(t=20, b=40, l=40, r=20)  # 여백 조정
     )
     fig_yearly.update_traces(
         hovertemplate='<b>%{x}년</b><br>언급량: %{y:,}회<extra></extra>',
@@ -231,15 +232,16 @@ with col3:
     fig_seasonal = px.pie(seasonal_data, values='Percentage', names='Season',
                          color_discrete_sequence=SHIITAKE_COLORS[:4])
     fig_seasonal.update_layout(
-        height=350,
+        height=280,  # 350 -> 280으로 축소
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=12)
+        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
+        margin=dict(t=20, b=20, l=20, r=20)  # 여백 조정
     )
     fig_seasonal.update_traces(
         hovertemplate='<b>%{label}</b><br>비율: %{percent}<extra></extra>',
         textinfo='label+percent',
-        textfont_size=12
+        textfont_size=11  # 텍스트 크기 축소
     )
     st.plotly_chart(fig_seasonal, use_container_width=True)
 
@@ -253,12 +255,13 @@ with col1:
                           color_discrete_map={'긍정': '#228B22', '중립': '#CD853F', '부정': '#DC143C'})
     fig_sentiment.update_layout(
         showlegend=False,
-        height=300,
+        height=240,  # 300 -> 240으로 축소
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=12),
+        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
         xaxis_title="비율 (%)",
-        yaxis_title=""
+        yaxis_title="",
+        margin=dict(t=20, b=40, l=60, r=20)  # 여백 조정
     )
     fig_sentiment.update_traces(
         hovertemplate='<b>%{y}</b><br>비율: %{x}%<br>언급량: %{customdata:,}회<extra></extra>',
@@ -281,12 +284,13 @@ with col2:
                       color='Topic', color_discrete_sequence=SHIITAKE_COLORS[:4])
     fig_topic.update_layout(
         showlegend=False,
-        height=350,
+        height=280,  # 350 -> 280으로 축소
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=12),
+        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
         yaxis_title="비율 (%)",
-        xaxis_title="토픽"
+        xaxis_title="토픽",
+        margin=dict(t=20, b=50, l=40, r=20)  # 여백 조정
     )
     fig_topic.update_traces(
         hovertemplate='<b>%{x}</b><br>비율: %{y}%<extra></extra>',
@@ -302,12 +306,13 @@ with col3:
                     color='Age_Group', color_discrete_sequence=SHIITAKE_COLORS[:3])
     fig_age.update_layout(
         showlegend=False,
-        height=300,
+        height=240,  # 300 -> 240으로 축소
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=12),
+        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
         yaxis_title="비율 (%)",
-        xaxis_title="연령대"
+        xaxis_title="연령대",
+        margin=dict(t=20, b=40, l=40, r=20)  # 여백 조정
     )
     fig_age.update_traces(
         hovertemplate='<b>%{x}</b><br>비율: %{y}%<br>언급량: %{customdata:,}회<extra></extra>',
@@ -355,14 +360,15 @@ with col1:
     ))
 
     fig_usage.update_layout(
-        height=400,
+        height=320,  # 400 -> 320으로 축소
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family="Noto Sans KR", size=12),
+        font=dict(family="Noto Sans KR", size=11),  # 폰트 크기 축소
         yaxis_title="비율 (%)",
         xaxis_title="용도",
         barmode='group',
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        margin=dict(t=40, b=50, l=40, r=20)  # 여백 조정
     )
     fig_usage.update_xaxes(tickangle=45)
     st.plotly_chart(fig_usage, use_container_width=True)
