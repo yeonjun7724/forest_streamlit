@@ -1,282 +1,124 @@
 import streamlit as st
-import geopandas as gpd
-import requests
-import base64
-from shapely.geometry import LineString
-import folium
-from folium import Map, FeatureGroup, GeoJson
-from folium.features import DivIcon
-from streamlit.components.v1 import html
+import matplotlib.pyplot as plt
+import pandas as pd
 
-# ───────────── Mapbox 토큰 ─────────────
-MAPBOX_TOKEN = "pk.eyJ1Ijoia2lteWVvbmp1biIsImEiOiJjbWM5cTV2MXkxdnJ5MmlzM3N1dDVydWwxIn0.rAH4bQmtA-MmEuFwRLx32Q"
-
-# ───────────── 와이드 레이아웃 ─────────────
 st.set_page_config(layout="wide")
+st.title("표고버섯 소셜 빅데이터 분석 (2019-2023)")
+st.subheader("총 언급량: 222,000회 | 67% 증가 추세")
 
-# ───────────── Base64 이미지 인코딩 ─────────────
-file_path = "./image.jpg"
-with open(file_path, "rb") as f:
-    img_bytes = f.read()
-encoded = base64.b64encode(img_bytes).decode()
+# =========================
+# 1. 주요 키워드 (Word Cloud처럼 표시)
+# =========================
+st.markdown("### 1. 주요 키워드")
+st.markdown("""
+**표고버섯** **볶음** **면역력**  
+육수 비타민D 채식 콜레스테롤 재배 베타글루칸 표고전  
+원목재배 강칠맛 건표고
+""")
 
-# ───────────── 상단 로고 + 제목 ─────────────
-st.markdown(
-    f"""
-    <div style='display: flex; align-items: center; justify-content: center; margin-bottom: 15px;'>
-        <img src="data:image/png;base64,{encoded}" style='width: 180px; margin-right: 20px;'/>
-        <h2 style='margin: 0; color: #333; text-align: center;'>
-            지속가능한 축산물류를 위한 탄소저감형 가축운송 플랫폼
-        </h2>
-    </div>
-    """,
-    unsafe_allow_html=True
+# =========================
+# 2. 연도별 언급량 추이
+# =========================
+st.markdown("### 2. 연도별 언급량 추이")
+year_data = pd.DataFrame({
+    '연도': ['2019', '2020', '2021', '2022', '2023'],
+    '언급량': [31500, 43800, 45200, 48900, 52600]
+})
+st.bar_chart(data=year_data.set_index("연도"))
+
+# =========================
+# 3. 계절별 언급 분포
+# =========================
+st.markdown("### 3. 계절별 언급 분포")
+season_data = pd.Series(
+    [26, 17, 29, 28],
+    index=["봄", "여름", "가을", "겨울"]
 )
+fig, ax = plt.subplots()
+ax.pie(season_data, labels=season_data.index, autopct='%1.1f%%', startangle=90)
+ax.axis("equal")
+st.pyplot(fig)
 
-# ───────────── 상수 ─────────────
-ASIS_PATH = "cb_tobe_sample.shp"
-TOBE_PATH = "cb_tobe_sample.shp"
-COMMON_TILE = "CartoDB positron"
-palette = ["#1f77b4", "#ff7f0e", "#2ca02c"]
+# =========================
+# 4. 감성 분석
+# =========================
+st.markdown("### 4. 감성 분석")
+st.markdown("- 긍정 76% (169,100회): \"향이 좋다\", \"건강에 좋은\"\n- 부정 8% (17,800회)\n- 중립 16% (35,600회)")
 
-# ───────────── 데이터 로드 ─────────────
-gdf_current = gpd.read_file(ASIS_PATH).to_crs(4326)
-gdf_dataso = gpd.read_file(TOBE_PATH).to_crs(4326)
+# =========================
+# 5. 토픽 모델링
+# =========================
+st.markdown("### 5. 토픽 모델링")
+topic_data = pd.DataFrame({
+    '토픽': ['요리/레시피', '건강/효능', '생산/재배', '유통/가격'],
+    '비율': [38, 32, 18, 12]
+}).set_index("토픽")
+st.bar_chart(topic_data)
 
-common_ids = sorted(set(gdf_current["sorting_id"]) & set(gdf_dataso["sorting_id"]))
-selected_id = st.selectbox("농가 선택", common_ids)
+# =========================
+# 6. 연령대별 관심도
+# =========================
+st.markdown("### 6. 연령대별 관심도")
+st.markdown("""
+- 20~30대: 31% (69,000회) - 채식/비건(45%), 다이어트(33%)  
+- 40~50대: 42% (93,450회) - 건강/면역(48%), 전통요리(32%)  
+- 60대+: 27% (60,050회) - 약용/건강식품(52%), 농업(38%)
+""")
 
-current_grp = gdf_current[gdf_current["sorting_id"] == selected_id]
-dataso_grp = gdf_dataso[gdf_dataso["sorting_id"] == selected_id]
+# =========================
+# 7. 용도별 활용 분석
+# =========================
+st.markdown("### 7. 용도별 활용 분석")
 
-current_cols = st.columns(4)
-dataso_cols = st.columns(4)
+use_data = pd.DataFrame({
+    '요리 용도': [27, 25, 18, 8],
+    '건강 효능': [38, 22, 18, 12]
+}, index=['국물/육수', '볶음', '채소대체식', '샐러드/기타'])
+st.bar_chart(use_data)
 
-def render_map(m, height=600):
-    html(m.get_root().render(), height=height)
+# =========================
+# 8. 핵심 인사이트
+# =========================
+st.markdown("### 8. 핵심 인사이트")
+st.markdown("""
+- ✅ 5년간 67% 성장 (31.5K → 52.6K회)  
+- ✅ 긍정 감성 76% - 맛과 건강효능 인정  
+- ✅ 요리용도 38% vs 건강효능 32% 양대 관심축  
+- ✅ 40~50대 42% 최고 관심층 (건강/면역 중심)  
+- ✅ MZ세대 31% - 채식/비건 트렌드 견인  
+- ✅ 계절별 고른 분포 - 사계절 꾸준한 관심  
+- ✅ 생산/재배 18% - 귀농·스마트팜 관심 증가
+""")
 
-params = {
-    "geometries": "geojson",
-    "overview": "full",
-    "steps": "true",
-    "access_token": MAPBOX_TOKEN
-}
+# =========================
+# 9. 표고버섯 소셜 트렌드 전망
+# =========================
+st.markdown("### 9. 표고버섯 소셜 트렌드 전망")
 
-col1, col2 = st.columns(2, gap="large")
+col1, col2, col3 = st.columns(3)
 
-# ───────────── 현재 경로 ─────────────
 with col1:
-    st.markdown("#### 현재")
-    try:
-        m = Map(location=[current_grp.geometry.y.mean(), current_grp.geometry.x.mean()],
-                zoom_start=10, tiles=COMMON_TILE)
-        fg = FeatureGroup(name="현재")
+    st.markdown("#### 성장 동력")
+    st.markdown("""
+    - 건강식품 관심 증가로 면역·콜레스테롤 효능 주목  
+    - MZ세대 채식/비건 트렌드로 식물성 단백질 대안 부상  
+    - 스마트팜·귀농 관심으로 생산·재배 콘텐츠 확산
+    """)
 
-        c_pts = current_grp[current_grp["location_t"] == "C"].reset_index()
-        d_pts = current_grp[current_grp["location_t"] == "D"].reset_index()
-
-        current_total_duration_sec, current_total_distance_km = 0, 0
-
-        for idx, crow in enumerate(c_pts.itertuples()):
-            color = palette[idx % len(palette)]
-            c = crow.geometry
-            d = d_pts.loc[d_pts.geometry.distance(c).idxmin()].geometry
-
-            folium.Marker([c.y, c.x], icon=DivIcon(
-                icon_size=(30,30), icon_anchor=(15,15),
-                html=f'<div style="font-size:14px; color:#fff; background:{color}; border-radius:50%; width:30px; height:30px; text-align:center; line-height:30px;">{idx+1}</div>'
-            )).add_to(fg)
-
-            folium.Marker([d.y, d.x], icon=folium.Icon(icon="flag-checkered", prefix="fa", color="red")).add_to(fg)
-
-            url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{c.x},{c.y};{d.x},{d.y}"
-            res = requests.get(url, params=params)
-            data = res.json()
-            routes = data.get("routes") or []
-
-            if routes:
-                current_total_duration_sec += routes[0]["duration"]
-                current_total_distance_km += routes[0]["distance"] / 1000
-                line = LineString(routes[0]["geometry"]["coordinates"])
-                style = {"color": color, "weight": 5}
-            else:
-                line = LineString([(c.x, c.y), (d.x, d.y)])
-                style = {"color": color, "weight": 3, "dashArray": "5,5"}
-
-            GeoJson(line, style_function=lambda _, s=style: s).add_to(fg)
-
-        # ✅ 현재 KPI (원본 구조 유지)
-        current_cols[0].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>현재 소요시간</div>
-                <div style='font-size:32px; font-weight:bold;'>{int(current_total_duration_sec // 60)} <span style='font-size:18px;'>분</span></div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        current_cols[1].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>현재 최단거리</div>
-                <div style='font-size:32px; font-weight:bold;'>{round(current_total_distance_km, 2)} <span style='font-size:18px;'>km</span></div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        current_cols[2].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>현재 물류비</div>
-                <div style='font-size:32px; font-weight:bold;'>{int(current_total_distance_km*5000):,} <span style='font-size:18px;'>원</span></div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        current_cols[3].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>현재 탄소배출량</div>
-                <div style='font-size:32px; font-weight:bold;'>{round(current_total_distance_km*0.65, 2)} <span style='font-size:18px;'>kg CO2</span></div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # ✅ 현재 범례 복원
-        legend_items = ""
-        for idx in range(len(c_pts)):
-            legend_items += f"""
-                <div style="display:flex; align-items:center; margin-bottom:5px;">
-                    <div style="width:20px;height:20px;background:{palette[idx % len(palette)]}; border-radius:50%; margin-right:6px;"></div>
-                    농가 {idx+1}
-                </div>
-            """
-        legend_html_current = f"""
-        <div style="
-            position: fixed; 
-            top: 30px; right: 30px; 
-            background-color: white; 
-            border: 1px solid #ddd; 
-            border-radius: 8px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-            padding: 10px 15px; 
-            z-index:9999; 
-            font-size: 13px;">
-            {legend_items}
-            <div style="display:flex; align-items:center; margin-top:5px;">
-                <i class="fa fa-flag-checkered" style="color:red;margin-right:6px;"></i> 도축장
-            </div>
-        </div>
-        """
-        m.get_root().html.add_child(folium.Element(legend_html_current))
-
-        fg.add_to(m)
-        render_map(m)
-
-    except Exception as e:
-        st.error(f"[현재 에러] {e}")
-
-# ───────────── 다타소(DaTaSo) 도입 후 ─────────────
 with col2:
-    st.markdown("#### 다타소(DaTaSo) 도입 후")
-    try:
-        m = Map(location=[dataso_grp.geometry.y.mean(), dataso_grp.geometry.x.mean()],
-                zoom_start=10, tiles=COMMON_TILE)
-        fg = FeatureGroup(name="다타소")
+    st.markdown("#### 마케팅 포인트")
+    st.markdown("""
+    - 40~50대: 건강효능(면역·콜레스테롤) 중심 소구  
+    - 20~30대: 채식 레시피/다이어트 콘텐츠 활용  
+    - 60대+: 전통 요리·농업 정보와 연계
+    """)
 
-        c_pts = dataso_grp[dataso_grp["location_t"] == "C"].sort_values("stop_seq").reset_index()
-        d_pt = dataso_grp[dataso_grp["location_t"] == "D"].geometry.iloc[0]
+with col3:
+    st.markdown("#### 콘텐츠 전략")
+    st.markdown("""
+    - 요리 레시피 38% vs 건강정보 32% 균형 배치  
+    - 계절별 맞춤 콘텐츠 (봄/가을 생산, 겨울 면역)  
+    - 긍정 감성 76% 활용한 브랜딩 강화
+    """)
 
-        dataso_total_duration_sec, dataso_total_distance_km = 0, 0
-
-        for i, row in c_pts.iterrows():
-            folium.Marker([row.geometry.y, row.geometry.x], icon=DivIcon(
-                icon_size=(30,30), icon_anchor=(15,15),
-                html=f'<div style="font-size:14px; color:#fff; background:{palette[i % len(palette)]}; border-radius:50%; width:30px; height:30px; text-align:center; line-height:30px;">{i+1}</div>'
-            )).add_to(fg)
-
-        folium.Marker([d_pt.y, d_pt.x], icon=folium.Icon(icon="flag-checkered", prefix="fa", color="red")).add_to(fg)
-
-        for i in range(len(c_pts)):
-            start = c_pts.geometry.iloc[i]
-            end = c_pts.geometry.iloc[i+1] if i < len(c_pts)-1 else d_pt
-
-            url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{start.x},{start.y};{end.x},{end.y}"
-            res = requests.get(url, params=params).json()
-            routes = res.get("routes") or []
-
-            if routes:
-                dataso_total_duration_sec += routes[0]["duration"]
-                dataso_total_distance_km += routes[0]["distance"] / 1000
-                coords = routes[0]["geometry"]["coordinates"]
-                line = LineString(coords)
-                style = {"color": palette[i % len(palette)], "weight": 5}
-                GeoJson(line, style_function=lambda _, s=style: s).add_to(fg)
-
-        diff_duration = int((current_total_duration_sec - dataso_total_duration_sec) // 60)
-        diff_distance = round(current_total_distance_km - dataso_total_distance_km, 2)
-        diff_cost = int((current_total_distance_km * 5000) - (dataso_total_distance_km * 5000))
-        diff_emission = round((current_total_distance_km * 0.65) - (dataso_total_distance_km * 0.65), 2)
-
-        diff_duration_pct = round((diff_duration / (current_total_duration_sec // 60) * 100), 1) if current_total_duration_sec != 0 else 0
-        diff_distance_pct = round((diff_distance / current_total_distance_km * 100), 1) if current_total_distance_km != 0 else 0
-        diff_cost_pct = round((diff_cost / (current_total_distance_km * 5000) * 100), 1) if current_total_distance_km != 0 else 0
-        diff_emission_pct = round((diff_emission / (current_total_distance_km * 0.65) * 100), 1) if current_total_distance_km != 0 else 0
-
-        dataso_cols[0].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>다타소(DaTaSo) 이용 시 소요시간</div>
-                <div style='font-size:32px; font-weight:bold;'>{int(dataso_total_duration_sec // 60)} <span style='font-size:18px;'>분</span></div>
-                <div style='font-size:14px; color:red; font-weight:bold; margin-top:4px;'>- {diff_duration} 분 ({diff_duration_pct}%)</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        dataso_cols[1].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>다타소(DaTaSo) 이용 시 최단거리</div>
-                <div style='font-size:32px; font-weight:bold;'>{round(dataso_total_distance_km, 2)} <span style='font-size:18px;'>km</span></div>
-                <div style='font-size:14px; color:red; font-weight:bold; margin-top:4px;'>- {diff_distance} km ({diff_distance_pct}%)</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        dataso_cols[2].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>다타소(DaTaSo) 이용 시 물류비</div>
-                <div style='font-size:32px; font-weight:bold;'>{int(dataso_total_distance_km*5000):,} <span style='font-size:18px;'>원</span></div>
-                <div style='font-size:14px; color:red; font-weight:bold; margin-top:4px;'>- {diff_cost:,} 원 ({diff_cost_pct}%)</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        dataso_cols[3].markdown(f"""
-            <div style='text-align:center;'>
-                <div style='font-size:14px; margin-bottom:4px;'>다타소(DaTaSo) 이용 시 탄소배출량</div>
-                <div style='font-size:32px; font-weight:bold;'>{round(dataso_total_distance_km*0.65,2)} <span style='font-size:18px;'>kg CO2</span></div>
-                <div style='font-size:14px; color:red; font-weight:bold; margin-top:4px;'>- {diff_emission} kg CO2 ({diff_emission_pct}%)</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # ✅ 다타소 범례 복원
-        legend_items = ""
-        for idx in range(len(c_pts)):
-            legend_items += f"""
-                <div style="display:flex; align-items:center; margin-bottom:5px;">
-                    <div style="width:20px;height:20px;background:{palette[idx % len(palette)]}; border-radius:50%; margin-right:6px;"></div>
-                    농가 {idx+1}
-                </div>
-            """
-        legend_html_dataso = f"""
-        <div style="
-            position: fixed; 
-            top: 30px; right: 30px; 
-            background-color: white; 
-            border: 1px solid #ddd; 
-            border-radius: 8px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-            padding: 10px 15px; 
-            z-index:9999; 
-            font-size: 13px;">
-            {legend_items}
-            <div style="display:flex; align-items:center; margin-top:5px;">
-                <i class="fa fa-flag-checkered" style="color:red;margin-right:6px;"></i> 도축장
-            </div>
-        </div>
-        """
-        m.get_root().html.add_child(folium.Element(legend_html_dataso))
-
-        fg.add_to(m)
-        render_map(m)
-
-    except Exception as e:
-        st.error(f"[다타소 에러] {e}")
+st.markdown("*데이터 출처: 소셜미디어 빅데이터 분석 (네이버, 카카오, 인스타그램, 유튜브, 블로그 등)*")
